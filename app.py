@@ -70,13 +70,16 @@ st.markdown("""
 
 # Load and display climbing animation
 def load_lottieurl(url):
-    r = requests.get(url)
-    if r.status_code != 200:
+    try:
+        r = requests.get(url)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    except Exception:
         return None
-    return r.json()
 
 # Load climbing animation
-climbing_animation = load_lottieurl("https://assets5.lottiefiles.com/packages/lf20_x0qfmv5k.json")
+climbing_animation = load_lottieurl("https://lottie.host/86b57bb5-ab1c-4c0c-a1d7-02ef47c3a783/UkFEwbJ0Yl.json")
 
 # Header
 st.markdown('<p class="big-font">FABRIES WORDT 30! 🎉</p>', unsafe_allow_html=True)
@@ -86,7 +89,10 @@ col1, col2 = st.columns([1, 1])
 
 with col1:
     st.markdown('<p class="birthday-text">Guess what... Je krijgt een EPIC cadeau! 🎁</p>', unsafe_allow_html=True)
-    st_lottie(climbing_animation, height=300, key="climbing")
+    if climbing_animation:
+        st_lottie(climbing_animation, height=300, key="climbing")
+    else:
+        st.markdown("### 🧗‍♂️ Time to climb!")
 
 with col2:
     # Load and display images
