@@ -46,6 +46,24 @@ st.markdown("""
     100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
+@keyframes bounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+.bouncing-image {
+    animation: bounce 2s infinite;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+}
+
+.bouncing-image-delayed {
+    animation: bounce 2s infinite;
+    animation-delay: 1s;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+}
+
 .stApp {
     background: linear-gradient(45deg, #1A1A1A, #2C3E50);
 }
@@ -59,11 +77,30 @@ st.markdown("""
     transform: rotate(-2deg);
 }
 
+.drink-box {
+    background-color: #4ECDC4;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+    margin: 2rem 0;
+    transform: rotate(2deg);
+}
+
 .countdown {
     font-family: 'Permanent Marker', cursive;
     font-size: 3rem !important;
     color: #FFE66D;
     text-shadow: 2px 2px 0px #000000;
+}
+
+@keyframes explode {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.explosion {
+    animation: explode 0.5s ease-out;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -95,11 +132,22 @@ with col1:
         st.markdown("### 🧗‍♂️ Time to climb!")
 
 with col2:
-    # Load and display images
-    images = Path(".").glob("*.png")
-    for img_path in images:
-        img = Image.open(img_path)
-        st.image(img, use_column_width=True, caption="Fabries in action!")
+    # Load and display images with labels
+    images = list(Path(".").glob("*.png"))
+    
+    # First image (Fabries)
+    if len(images) > 0:
+        img = Image.open(images[0])
+        st.markdown('<div class="bouncing-image">', unsafe_allow_html=True)
+        st.image(img, use_column_width=True, caption="Fabries in action! 🧗‍♂️")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Second image (Dick)
+    if len(images) > 1:
+        img = Image.open(images[1])
+        st.markdown('<div class="bouncing-image-delayed">', unsafe_allow_html=True)
+        st.image(img, use_column_width=True, caption="Dick presenting the epic gift! 🎁")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # Gift reveal section
 st.markdown("""
@@ -109,6 +157,18 @@ st.markdown("""
     <p style="color: white; text-align: center; font-size: 1.2rem;">
         Want wat is er beter dan je 30ste te vieren met een nieuwe uitdaging?<br>
         Time to crush some problems! 💪
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+# Drink bonus section
+st.markdown("""
+<div class="drink-box">
+    <h2 style="color: white; text-align: center;">🍺 BONUS SURPRISE! 🍺</h2>
+    <h3 style="color: white; text-align: center;">Een drankje naar keuze bij het boulderen!</h3>
+    <p style="color: white; text-align: center; font-size: 1.2rem;">
+        Want na het klimmen moet er natuurlijk wel wat te drinken zijn...<br>
+        Kies maar uit: 🍺 Biertje / 🧃 Smoothie / ☕️ Koffie / 🥤 Fris
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -135,12 +195,22 @@ st.markdown("""
 * It's never too late to start climbing! 🧗‍♂️
 """)
 
-# Easter egg - click counter
+# Easter egg - click counter with explosion
 if 'clicks' not in st.session_state:
     st.session_state.clicks = 0
 
 if st.button("🎁 Click me for a surprise!", key="surprise_button"):
     st.session_state.clicks += 1
-    if st.session_state.clicks >= 5:
+    if st.session_state.clicks >= 3:
         st.balloons()
-        st.markdown("### 🎉 SURPRISE! Keep crushing it, Fabries! 🧗‍♂️")
+        st.snow()
+        st.markdown("""
+        <div class="explosion">
+            <h1 style="text-align: center; color: #FFE66D; font-size: 4rem; text-shadow: 2px 2px 0px #000000;">
+                💥 BOOOM! 💥
+            </h1>
+            <h2 style="text-align: center; color: #FF6B6B;">
+                Happy 30th Birthday Fabries! 🎉
+            </h2>
+        </div>
+        """, unsafe_allow_html=True)
