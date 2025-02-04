@@ -4,9 +4,7 @@ from PIL import Image
 from streamlit_lottie import st_lottie
 import time
 from pathlib import Path
-from streamlit_extras.let_it_rain import rain
-from streamlit_particles import particles
-import json
+import random
 
 # Page config
 st.set_page_config(
@@ -84,6 +82,11 @@ st.markdown("""
     margin: 2rem 0;
     transform: rotate(-2deg);
     cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gift-box:hover {
+    transform: rotate(-2deg) scale(1.02);
 }
 
 .drink-box {
@@ -94,13 +97,15 @@ st.markdown("""
     margin: 2rem 0;
     transform: rotate(2deg);
     cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
-.countdown {
-    font-family: 'Permanent Marker', cursive;
-    font-size: 3rem !important;
-    color: #FFE66D;
-    text-shadow: 2px 2px 0px #000000;
+.drink-box:hover {
+    transform: rotate(2deg) scale(1.02);
+}
+
+.explosion {
+    animation: explode 0.5s ease-out;
 }
 
 @keyframes explode {
@@ -109,52 +114,12 @@ st.markdown("""
     100% { transform: scale(1); opacity: 1; }
 }
 
-.explosion {
-    animation: explode 0.5s ease-out;
-}
-
 div[data-testid="stImage"] {
     cursor: pointer;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Particle effect configuration
-particles_config = {
-    "particles": {
-        "number": {
-            "value": 30,
-            "density": {
-                "enable": True,
-                "value_area": 800
-            }
-        },
-        "color": {
-            "value": ["#FF6B6B", "#4ECDC4", "#FFE66D"]
-        },
-        "shape": {
-            "type": ["circle", "star", "triangle"]
-        },
-        "size": {
-            "value": 6,
-            "random": True
-        },
-        "move": {
-            "enable": True,
-            "speed": 3,
-            "direction": "none",
-            "random": True,
-            "straight": False,
-            "out_mode": "out",
-            "bounce": False,
-        }
-    }
-}
-
-# Add particle effect
-particles(particles_config, height="20rem")
-
-# Load climbing animations
 def load_lottieurl(url):
     try:
         r = requests.get(url)
@@ -171,21 +136,7 @@ climbing_animations = [
     load_lottieurl("https://lottie.host/ad5d326c-4f4e-4fce-9f6d-7d2d56a43c67/h4UOBMGTYt.json")
 ]
 
-# Header with rain effect
-rain(
-    emoji="🧗‍♂️",
-    font_size=54,
-    falling_speed=5,
-    animation_length="infinite",
-)
-
 st.markdown('<p class="big-font">FABRIES WORDT 30! 🎉</p>', unsafe_allow_html=True)
-
-# Initialize session state for click effects
-if 'clicks' not in st.session_state:
-    st.session_state.clicks = 0
-if 'explosions' not in st.session_state:
-    st.session_state.explosions = []
 
 # Two columns layout
 col1, col2 = st.columns([1, 1])
@@ -218,60 +169,55 @@ with col2:
             st.snow()
         st.markdown('</div>', unsafe_allow_html=True)
 
-# Gift reveal section with click effect
-gift_container = st.container()
-with gift_container:
+# Gift reveal section
+st.markdown("""
+<div class="gift-box">
+    <h2 style="color: white; text-align: center;">🎊 JOUW EPIC CADEAU 🎊</h2>
+    <h3 style="color: white; text-align: center;">Een BOULDERBON om je inner climber los te laten! 🧗‍♂️</h3>
+    <p style="color: white; text-align: center; font-size: 1.2rem;">
+        Want wat is er beter dan je 30ste te vieren met een nieuwe uitdaging?<br>
+        Time to crush some problems! 💪
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+if st.button("🎁 KLIK HIER!", key="gift_button"):
+    st.balloons()
     st.markdown("""
-    <div class="gift-box">
-        <h2 style="color: white; text-align: center;">🎊 JOUW EPIC CADEAU 🎊</h2>
-        <h3 style="color: white; text-align: center;">Een BOULDERBON om je inner climber los te laten! 🧗‍♂️</h3>
-        <p style="color: white; text-align: center; font-size: 1.2rem;">
-            Want wat is er beter dan je 30ste te vieren met een nieuwe uitdaging?<br>
-            Time to crush some problems! 💪
-        </p>
+    <div class="explosion">
+        <h2 style="text-align: center; color: #FFE66D; font-size: 3rem;">
+            🎁 SURPRISE! 🎁
+        </h2>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("🎁 KLIK HIER!", key="gift_button"):
-        st.balloons()
-        rain(
-            emoji="💥",
-            font_size=54,
-            falling_speed=5,
-            animation_length=1,
-        )
 
-# Drink bonus section with click effect
-drink_container = st.container()
-with drink_container:
-    st.markdown("""
-    <div class="drink-box">
-        <h2 style="color: white; text-align: center;">🍺 BONUS SURPRISE! 🍺</h2>
-        <h3 style="color: white; text-align: center;">Een drankje naar keuze bij het boulderen!</h3>
-        <p style="color: white; text-align: center; font-size: 1.2rem;">
-            Want na het klimmen moet er natuurlijk wel wat te drinken zijn...<br>
-            Kies maar uit: 🍺 Biertje / 🧃 Smoothie / ☕️ Koffie / 🥤 Fris
-        </p>
+# Drink bonus section
+st.markdown("""
+<div class="drink-box">
+    <h2 style="color: white; text-align: center;">🍺 BONUS SURPRISE! 🍺</h2>
+    <h3 style="color: white; text-align: center;">Een drankje naar keuze bij het boulderen!</h3>
+    <p style="color: white; text-align: center; font-size: 1.2rem;">
+        Want na het klimmen moet er natuurlijk wel wat te drinken zijn...<br>
+        Kies maar uit: 🍺 Biertje / 🧃 Smoothie / ☕️ Koffie / 🥤 Fris
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+if st.button("🍺 KIES JE DRANKJE!", key="drink_button"):
+    st.snow()
+    drinks = ["🍺", "🧃", "☕️", "🥤"]
+    st.markdown(f"""
+    <div class="explosion">
+        <h2 style="text-align: center; color: #4ECDC4; font-size: 3rem;">
+            {random.choice(drinks)} PROOST! {random.choice(drinks)}
+        </h2>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("🍺 KIES JE DRANKJE!", key="drink_button"):
-        st.snow()
-        rain(
-            emoji="🍺",
-            font_size=54,
-            falling_speed=5,
-            animation_length=1,
-        )
 
-# Surprise button with multiple effects
+# Super surprise button
 if st.button("💥 SUPER SURPRISE! 💥", key="surprise_button"):
     st.balloons()
     st.snow()
-    rain(
-        emoji="🎉",
-        font_size=54,
-        falling_speed=5,
-        animation_length=1,
-    )
     st.markdown("""
     <div class="explosion">
         <h1 style="text-align: center; color: #FFE66D; font-size: 4rem; text-shadow: 2px 2px 0px #000000;">
@@ -292,6 +238,3 @@ st.markdown("""
 * Bouldering is excellent for both physical and mental strength
 * Nu je 30 bent, ben je in je prime climbing jaren! 💪
 """)
-
-# Add final particle effect
-particles(particles_config, height="20rem")
